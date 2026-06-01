@@ -1,56 +1,56 @@
-use super::{AgentId, Visibility};
-use crate::{Event, StateChange, TryExtract, extract::Extract};
+use super::Visibility;
+use crate::{AgentId, Event, StateChange, TryExtract, extract::Extract};
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
-/// Agent targetable state change.
+/// Gadget is playing model animation.
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct TargetableEvent {
-    /// Time of registering the targetable state change.
+pub struct GadgetAnimation {
+    /// Time of registering the event.
     pub time: u64,
 
-    /// Agent that had their targetable state changed.
+    /// Gadget agent that is playing the animation.
     pub agent: AgentId,
 
-    /// New targetable state.
-    pub targetable: Visibility,
+    /// Animation token.
+    pub token: u64,
 }
 
-impl Extract for TargetableEvent {
+impl Extract for GadgetAnimation {
     #[inline]
     unsafe fn extract(event: &Event) -> Self {
         Self {
             time: event.time,
             agent: AgentId::from_src(event),
-            targetable: (event.dst_agent as u32).into(),
+            token: event.dst_agent,
         }
     }
 }
 
-impl TryExtract for TargetableEvent {
+impl TryExtract for GadgetAnimation {
     #[inline]
     fn can_extract(event: &Event) -> bool {
-        event.get_statechange() == StateChange::Targetable
+        event.get_statechange() == StateChange::GadgetAnimation
     }
 }
 
-/// Agent changed stealth state.
+/// Gadget name changed visibility.
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct StealthEvent {
-    /// Time of registering the stealth state change.
+pub struct GadgetName {
+    /// Time of registering the event.
     pub time: u64,
 
-    /// Agent that had their stealth state changed.
+    /// Gadget agent that changed name visibility.
     pub agent: AgentId,
 
-    /// New stealth state.
+    /// New name visibility.
     pub visible: Visibility,
 }
 
-impl Extract for StealthEvent {
+impl Extract for GadgetName {
     #[inline]
     unsafe fn extract(event: &Event) -> Self {
         Self {
@@ -61,9 +61,9 @@ impl Extract for StealthEvent {
     }
 }
 
-impl TryExtract for StealthEvent {
+impl TryExtract for GadgetName {
     #[inline]
     fn can_extract(event: &Event) -> bool {
-        event.get_statechange() == StateChange::StealthChange
+        event.get_statechange() == StateChange::GadgetName
     }
 }

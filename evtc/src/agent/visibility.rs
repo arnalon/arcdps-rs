@@ -6,9 +6,7 @@ use serde::{Deserialize, Serialize};
 #[cfg(feature = "strum")]
 use strum::{Display, EnumCount, EnumIter, IntoStaticStr, VariantNames};
 
-/// Whether the agent is an ally or enemy.
-///
-/// *Arc calls this "iff" for if friend/foe.*
+/// Visibility state.
 #[derive(
     Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, IntoPrimitive, FromPrimitive,
 )]
@@ -17,18 +15,18 @@ use strum::{Display, EnumCount, EnumIter, IntoStaticStr, VariantNames};
     feature = "strum",
     derive(Display, EnumCount, EnumIter, IntoStaticStr, VariantNames)
 )]
-#[repr(u8)]
-pub enum Affinity {
-    /// Allied agent.
-    Friend = 0,
+#[repr(u32)]
+pub enum Visibility {
+    /// Visible.
+    Visible = 0,
 
-    /// Enemy agent.
-    Foe = 1,
+    /// Hidden.
+    Hidden = 1,
 
-    /// Unknown affinity between agents.
-    Unknown = 2,
+    /// Unsupported.
+    Unsupported = 2,
 
     /// Invalid.
     #[num_enum(catch_all)]
-    Invalid(u8),
+    Invalid(u32),
 }

@@ -274,7 +274,10 @@ pub enum StateChange {
     ///
     /// `src_agent` changed targetable state.
     /// `dst_agent` contains the new targetable state.
-    /// `0` for no, `1` for yes. Default is yes.
+    /// `0` for no, `1` for yes, `2` for unsupported.
+    /// For characters if healthbar shown.
+    /// For gadgets if interactable or healthbar shown.
+    /// For Attack targets if selectable.
     ///
     /// EVTC: yes, limited to agent table outside instances.
     ///
@@ -852,6 +855,38 @@ pub enum StateChange {
     ///
     /// Realtime: yes
     WvwObjectiveStatus = 75,
+
+    /// Agent stealth state change.
+    ///
+    /// `src_agent` is the agent.
+    /// `dst_agent` contains the new stealth state (characters only).
+    /// `0` for no, `1` for yes, `2` for unsupported.
+    ///
+    /// EVTC: limited to agent table outside instances.
+    ///
+    /// Realtime: no
+    StealthChange = 76,
+
+    /// Gadget model animation.
+    ///
+    /// `src_agent` is the gadget aget.
+    /// `dst_agent` contains the animation token.
+    ///
+    /// EVTC: limited to agent table outside instances.
+    ///
+    /// Realtime: no
+    GadgetAnimation = 77,
+
+    /// Gadget name visibility changed.
+    ///
+    /// `src_agent` is the gadget agent.
+    /// `dst_agent` contains the new state (gadgets only).
+    /// `0` for no, `1` for yes, `2` for unsupported.
+    ///
+    /// EVTC: limited to agent table outside instances.
+    ///
+    /// Realtime: no
+    GadgetName = 78,
 
     /// Unknown or invalid.
     #[num_enum(catch_all)]

@@ -2,8 +2,9 @@ use crate::{
     Event, Language, StateChange,
     agent::{
         AgentStatusEvent, AttackTargetEvent, BarrierUpdateEvent, BreakbarPercentEvent,
-        BreakbarStateEvent, DownContributionEvent, EnterCombatEvent, GliderEvent,
-        HealthUpdateEvent, MaxHealthEvent, StunbreakEvent, TargetableEvent, TeamChangeEvent,
+        BreakbarStateEvent, DownContributionEvent, EnterCombatEvent, GadgetAnimation, GadgetName,
+        GliderEvent, HealthUpdateEvent, MaxHealthEvent, StealthEvent, StunbreakEvent,
+        TargetableEvent, TeamChangeEvent,
     },
     animation::{AnimationStart, AnimationStop},
     buff::{
@@ -259,6 +260,15 @@ pub enum EventKind {
     /// WvW objective status.
     WvwObjectiveStatus(WvwObjectiveStatus),
 
+    /// Stealth state change.
+    StealthChange(StealthEvent),
+
+    /// Gadget model animation.
+    GadgetAnimation(GadgetAnimation),
+
+    /// Gadget name visibility state.
+    GadgetName(GadgetName),
+
     /// Unknown event.
     Unknown(Event),
 }
@@ -387,6 +397,9 @@ impl From<Event> for EventKind {
                 StateChange::Transformation => Self::Transformation(event.extract()),
                 StateChange::WvwTeams => Self::WvwTeams(event.extract()),
                 StateChange::WvwObjectiveStatus => Self::WvwObjectiveStatus(event.extract()),
+                StateChange::StealthChange => Self::StealthChange(event.extract()),
+                StateChange::GadgetAnimation => Self::GadgetAnimation(event.extract()),
+                StateChange::GadgetName => Self::GadgetName(event.extract()),
                 StateChange::IdleEvent | StateChange::ReplInfo | StateChange::EarlyExit => {
                     unreachable!("illegal internal statechange")
                 }

@@ -7,6 +7,7 @@ mod agent_kind;
 mod attack_target;
 mod breakbar;
 mod combat;
+mod gadget;
 mod glider;
 mod health;
 mod id;
@@ -14,6 +15,7 @@ mod status;
 mod stunbreak;
 mod targetable;
 mod team;
+mod visibility;
 
 #[cfg(feature = "realtime")]
 pub mod realtime;
@@ -22,6 +24,6 @@ pub mod realtime;
 pub mod log;
 
 pub use self::{
-    affinity::*, agent_kind::*, attack_target::*, breakbar::*, combat::*, glider::*, health::*,
-    id::*, status::*, stunbreak::*, targetable::*, team::*,
+    affinity::*, agent_kind::*, attack_target::*, breakbar::*, combat::*, gadget::*, glider::*,
+    health::*, id::*, status::*, stunbreak::*, targetable::*, team::*, visibility::*,
 };
