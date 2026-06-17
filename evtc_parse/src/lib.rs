@@ -32,7 +32,6 @@ mod ext {
 mod error;
 mod header;
 mod log;
-mod log_transformed;
 mod util;
 
 pub use self::error::*;
@@ -40,7 +39,6 @@ pub use self::ext::agent::*;
 pub use self::ext::skill::*;
 pub use self::header::*;
 pub use self::log::*;
-pub use self::log_transformed::*;
 pub use evtc::*;
 
 #[cfg(feature = "zevtc")]

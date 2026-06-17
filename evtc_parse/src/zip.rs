@@ -1,4 +1,5 @@
 use crate::{Log, Parse, ParseError};
+use evtc::Event;
 use std::io;
 use zip::{ZipArchive, result::ZipError};
 
@@ -7,12 +8,15 @@ pub fn parse_zevtc(input: impl io::Read + io::Seek) -> Result<Log, ParseError> {
     Log::parse_zevtc(input)
 }
 
-impl Log {
+impl<T> Log<T> {
     /// Parses a [`Log`] from a compressed `zevtc` input.
-    pub fn parse_zevtc(input: impl io::Read + io::Seek) -> Result<Log, ParseError> {
+    pub fn parse_zevtc(input: impl io::Read + io::Seek) -> Result<Self, ParseError>
+    where
+        T: From<Event>,
+    {
         let mut archive = ZipArchive::new(input).expect("input log file not compressed");
         let mut file = archive.by_index(0).expect("input log file empty");
-        Log::parse(&mut file)
+        Self::parse(&mut file)
     }
 }
 
