@@ -5,8 +5,15 @@ use crate::{
     imgui,
     util::abi,
 };
+use num_enum::{FromPrimitive, IntoPrimitive};
 use std::ffi::c_char;
 use windows::Win32::Foundation::{HWND, LPARAM, WPARAM};
+
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
+#[cfg(feature = "strum")]
+use strum::{Display, EnumCount, EnumIter, IntoStaticStr, VariantNames};
 
 /// Exported struct for ArcDPS plugins.
 #[repr(C)]
@@ -73,6 +80,8 @@ pub type InitFunc = fn() -> Result<(), Option<String>>;
 
 pub type ReleaseFunc = fn();
 
+pub type ReleaseRequestFunc = fn(reason: ExtensionLoad) -> bool;
+
 pub type UpdateUrlFunc = fn() -> Option<String>;
 
 pub type WndProcCallback = fn(key: usize, key_down: bool, prev_key_down: bool) -> bool;
@@ -110,4 +119,60 @@ abi! {
     pub type RawOptionsCallback = unsafe extern fn();
 
     pub type RawOptionsWindowsCallback = unsafe extern fn(window_name: *const c_char) -> bool;
+}
+
+/// Result of an exentsion load or reason for an extension unload.
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, IntoPrimitive, FromPrimitive,
+)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(
+    feature = "strum",
+    derive(Display, EnumCount, EnumIter, IntoStaticStr, VariantNames)
+)]
+#[repr(u32)]
+pub enum ExtensionLoad {
+    /// Extension was loaded successfully.
+    Ok = 0,
+
+    /// No signature.
+    NoSignature = 1,
+
+    /// ImGui version did not match.
+    ///
+    /// Extension will stay loaded with ImGui callbacks disabled.
+    InvalidImGui = 2,
+
+    /// Obsolete ArcDPS module.
+    Obsolete = 3,
+
+    /// An extension with the same signature already exists.
+    AlreadyLoaded = 4,
+
+    /// Extension did not provide callback function table.
+    NoFunctionTableReturned = 5,
+
+    /// Extension did not provide an `init` function.
+    NoInitFunctionReturned = 6,
+
+    /// Failed to load extension module with `LoadLibrary`.
+    ///
+    /// Safe to call `GetLastError`.
+    LoadLibaryError = 7,
+
+    /// No slots left.
+    NoSlotsLeft = 8,
+
+    /// Extension is missing `get_release_addr` export.
+    MissingGetReleaseAddr = 9,
+
+    /// Game shutdown.
+    Shutdown = 10,
+
+    /// Removed via call to `freeextension`.
+    RemoveViaExport = 11,
+
+    /// Unknown or invalid.
+    #[num_enum(catch_all)]
+    Unknown(u32),
 }

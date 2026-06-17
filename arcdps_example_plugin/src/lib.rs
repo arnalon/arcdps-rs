@@ -3,7 +3,7 @@
 #![allow(unused_variables)]
 
 use arcdps::{
-    Agent, Event, StateChange,
+    Agent, Event, ExtensionLoad, StateChange,
     extras::{
         Control, ExtrasAddonInfo, KeybindChange, Language, SquadMessage, UserRole,
         message::Message, user::UserInfoIter,
@@ -16,6 +16,7 @@ arcdps::export! {
     sig: 0x12345678, // change this to a random number
     init,
     release,
+    release_request,
     update_url,
     imgui,
     options_end,
@@ -45,6 +46,12 @@ fn init() -> Result<(), Option<String>> {
 /// Plugin unload.
 fn release() {
     log::info!("plugin has stopped")
+}
+
+/// Plugin unload.
+fn release_request(reason: ExtensionLoad) -> bool {
+    log::info!("plugin has received unload request: {reason:?}");
+    true
 }
 
 /// Plugin update URL.

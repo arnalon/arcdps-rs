@@ -23,7 +23,6 @@ impl ArcDpsGen {
     /// Generates a null-terminated literal with the plugin's name.
     pub fn gen_name_cstr(&self) -> LitStr {
         let name = self.gen_name();
-
         LitStr::new((name.value() + "\0").as_str(), name.span())
     }
 
@@ -41,7 +40,8 @@ impl ArcDpsGen {
         let sig = &self.sig;
 
         let (init_func, init) = self.build_init().into_tuple();
-        let (release_func, release) = self.build_release().into_tuple();
+        let release_request = self.build_release_request();
+        let release = self.build_release();
         let update_url = self.build_update_url();
 
         let (combat_func, combat_value) = self.build_combat().into_tuple();
@@ -107,8 +107,6 @@ impl ArcDpsGen {
                 }
             }
 
-            #release_func
-
             extern #C_ABI fn __unload() {
                 #release
             }
@@ -131,8 +129,12 @@ impl ArcDpsGen {
 
             /// ArcDPS looks for this exported function and calls the address it returns on client exit.
             #[unsafe(no_mangle)]
-            pub extern #SYSTEM_ABI fn get_release_addr() -> *mut ::arcdps::__macro::c_void {
-                self::__unload as _
+            pub extern #SYSTEM_ABI fn get_release_addr(reason: ::std::primitive::u32) -> *mut ::arcdps::__macro::c_void {
+                if #release_request {
+                    self::__unload as _
+                } else {
+                    ::std::ptr::null_mut()
+                }
             }
 
             #update_url

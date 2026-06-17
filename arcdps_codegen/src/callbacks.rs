@@ -25,19 +25,32 @@ impl ArcDpsGen {
     }
 
     /// Generates the release function.
-    pub fn build_release(&self) -> CallbackInfo {
+    pub fn build_release(&self) -> TokenStream {
         if let Some(release) = &self.release {
             let span = syn::Error::new_spanned(release, "").span();
-            CallbackInfo::new(
-                quote_spanned! {span=>
+            quote_spanned! {span=>
+                {
                     const __RELEASE: ::arcdps::callbacks::ReleaseFunc = #release;
-                },
-                quote_spanned! {span=>
-                    self::__RELEASE()
-                },
-            )
+                    __RELEASE()
+                }
+            }
         } else {
-            CallbackInfo::empty()
+            quote! {}
+        }
+    }
+
+    /// Generates the release request function.
+    pub fn build_release_request(&self) -> TokenStream {
+        if let Some(release_request) = &self.release_request {
+            let span = syn::Error::new_spanned(release_request, "").span();
+            quote_spanned! {span=>
+                {
+                    const __RELEASE_REQUEST: ::arcdps::callbacks::ReleaseRequestFunc = #release_request;
+                    __RELEASE_REQUEST(reason.into())
+                }
+            }
+        } else {
+            quote! { true }
         }
     }
 

@@ -6,13 +6,13 @@ mod has;
 pub mod raw;
 
 pub use self::has::*;
+pub use crate::callbacks::ExtensionLoad;
 
 use crate::{
     evtc::{Event, Profession},
     globals::arc::ArcGlobals,
     imgui::sys::ImVec4,
 };
-use num_enum::{IntoPrimitive, TryFromPrimitive};
 use std::{
     ffi::{CString, NulError, OsString},
     mem::MaybeUninit,
@@ -22,12 +22,6 @@ use std::{
     slice,
 };
 use windows::Win32::Foundation::HMODULE;
-
-#[cfg(feature = "serde")]
-use serde::{Deserialize, Serialize};
-
-#[cfg(feature = "strum")]
-use strum::{Display, EnumCount, EnumIter, IntoStaticStr, VariantNames};
 
 /// Retrieves the ArcDPS version as string.
 #[inline]
@@ -327,52 +321,12 @@ pub fn add_event_combat(event: &Event, sig: u32) {
 /// Requests to load an extension (plugin/addon).
 ///
 /// ArcDPS will `LoadLibrary` the `handle` to increment the reference count, call `get_init_addr` and call its returned function.
-/// Returns [`AddExtensionResult`] indicating success or failure.
+/// Returns an [`ExtensionLoad`] indicating success or failure.
 ///
 /// This uses version 2 (`addextension2`) of the extension API.
 #[inline]
-pub fn add_extension(handle: HMODULE) -> AddExtensionResult {
-    unsafe { raw::add_extension(handle) }
-        .try_into()
-        .expect("unexpected add extension result")
-}
-
-/// Result of an [`add_extension`] operation.
-#[derive(
-    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, IntoPrimitive, TryFromPrimitive,
-)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[cfg_attr(
-    feature = "strum",
-    derive(Display, EnumCount, EnumIter, IntoStaticStr, VariantNames)
-)]
-#[repr(u32)]
-pub enum AddExtensionResult {
-    /// Extension was loaded successfully.
-    Ok,
-
-    /// Extension-specific error.
-    ExtensionError,
-
-    /// ImGui version did not match.
-    ImGuiError,
-
-    /// Obsolete ArcDPS module.
-    Obsolete,
-
-    /// An extension with the same `sig` already exists.
-    SigExists,
-
-    /// Extension did not provide callback function table.
-    NoExport,
-
-    /// Extension did not provide an `init` function.
-    NoInit,
-
-    /// Failed to load extension module with `LoadLibrary`.
-    ///
-    /// Safe to call `GetLastError`.
-    LoadError,
+pub fn add_extension(handle: HMODULE) -> ExtensionLoad {
+    unsafe { raw::add_extension(handle) }.into()
 }
 
 /// Requests to free a loaded extension (plugin/addon).

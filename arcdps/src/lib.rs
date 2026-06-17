@@ -102,6 +102,7 @@ mod util;
 #[cfg(feature = "codegen")]
 pub use arcdps_codegen::export;
 
+pub use crate::callbacks::ExtensionLoad;
 pub use crate::globals::{
     arc::{init_arc, search_and_init_arc, search_arc_handle},
     dxgi::{d3d11_device, dxgi_swap_chain, init_dxgi},
@@ -138,6 +139,13 @@ pub struct SupportedFields {
     ///
     /// May return an error with an optional error message to signal load failure.
     pub init: Option<InitFunc>,
+
+    /// Callback for requested plugin unload.
+    ///
+    /// Returning `true` calls the [`release`](SupportedFields::release) callback and unloads the plugin.
+    ///
+    /// Returning `false` keeps the plugin loaded and all callbacks registered.
+    pub release_request: Option<ReleaseRequestFunc>,
 
     /// Callback for plugin unload.
     pub release: Option<ReleaseFunc>,

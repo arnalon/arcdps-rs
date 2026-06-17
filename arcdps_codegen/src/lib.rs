@@ -55,6 +55,7 @@ pub(crate) struct ArcDpsGen {
     sig: Expr,
     init: Option<Expr>,
     release: Option<Expr>,
+    release_request: Option<Expr>,
     update_url: Option<Expr>,
 
     raw_combat: Option<Expr>,
@@ -89,6 +90,7 @@ impl Default for ArcDpsGen {
             sig: Expr::Verbatim(TokenStream::new()),
             init: None,
             release: None,
+            release_request: None,
             update_url: None,
 
             raw_combat: None,
@@ -128,11 +130,6 @@ impl CallbackInfo {
     /// Creates a new callback info from token streams.
     pub fn new(function: TokenStream, value: TokenStream) -> Self {
         Self { function, value }
-    }
-
-    /// Creates a new callback info with no contents.
-    pub fn empty() -> Self {
-        Self::new(TokenStream::new(), TokenStream::new())
     }
 
     /// Helper to build a callback.
