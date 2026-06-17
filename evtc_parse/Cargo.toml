@@ -1,11 +1,11 @@
 [package]
 name = "evtc_parse"
-version = "0.14.0"
+version = "0.15.0"
 authors = ["Zerthox"]
 edition = "2024"
 description = "Parsing for ArcDPS EVTC logs"
 repository = "https://github.com/zerthox/arcdps-rs"
-rust-version = "1.87.0"
+rust-version = "1.88.0"
 
 [dependencies]
 evtc = { path = "../evtc" }

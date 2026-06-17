@@ -1,11 +1,11 @@
 [package]
 name = "evtc_dump"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Zerthox"]
 edition = "2024"
 description = "Dump ArcDPS EVTC log information"
 repository = "https://github.com/zerthox/arcdps-rs"
-rust-version = "1.87.0"
+rust-version = "1.88.0"
 
 [dependencies]
 clap = { version = "4.4.6", features = ["derive"] }

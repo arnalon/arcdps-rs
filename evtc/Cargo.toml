@@ -1,11 +1,11 @@
 [package]
 name = "evtc"
-version = "0.16.0"
+version = "0.17.0"
 authors = ["Zerthox"]
 edition = "2024"
 description = "Rust bindings for the ArcDPS EVTC API"
 repository = "https://github.com/zerthox/arcdps-rs"
-rust-version = "1.87.0"
+rust-version = "1.88.0"
 
 [dependencies]
 bitflags = { workspace = true }
