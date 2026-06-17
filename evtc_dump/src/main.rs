@@ -22,6 +22,10 @@ struct Args {
     /// Data to dump.
     #[clap(value_enum, long, short, default_value_t)]
     pub data: Data,
+
+    /// Whether to parse as legacy log.
+    #[clap(long)]
+    pub legacy: bool,
 }
 
 impl Args {
@@ -66,9 +70,7 @@ fn main() {
 
     println!("Parsing \"{}\"...", args.input.display());
 
-    let log = parse_file(&args.input)
-        .expect("failed to parse EVTC log")
-        .into_transformed();
+    let log = parse_file(&args.input).expect("failed to parse EVTC log");
 
     println!(
         "Parsed {} log for encounter id {}",
@@ -79,6 +81,12 @@ fn main() {
         Data::All => args.save(&log),
         Data::Agents => args.save(&log.agents),
         Data::Skills => args.save(&log.skills),
-        Data::Events => args.save(&log.events),
+        Data::Events => {
+            if args.legacy {
+                args.save(&log.into_transformed_legacy().events)
+            } else {
+                args.save(&log.into_transformed().events)
+            }
+        }
     }
 }
